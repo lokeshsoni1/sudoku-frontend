@@ -69,6 +69,11 @@ input {
     border: 1px solid black;
 }
 
+/* 🔥 placeholder style (NEW 🔥) */
+input::placeholder {
+    color: gray;
+}
+
 /* 🔥 buttons */
 .buttons {
     display: flex;
@@ -136,6 +141,8 @@ for (let i = 0; i < 81; i++) {
     let input = document.createElement("input");
     input.maxLength = 1;
 
+    input.placeholder = "."; // 🔥 NEW: user ko hint ki empty allowed hai
+
     let row = Math.floor(i / 9);
     let col = i % 9;
 
@@ -154,6 +161,11 @@ for (let i = 0; i < 81; i++) {
 /* 🔥 SOLVE BUTTON */
 document.getElementById("solveBtn").addEventListener("click", function () {
 
+    let solveBtn = document.getElementById("solveBtn");
+
+    solveBtn.innerText = "Solving..."; // 🔥 NEW: loading text
+    solveBtn.disabled = true; // 🔥 NEW: double click avoid
+
     let inputs = document.querySelectorAll("#grid input");
 
     let board = [];
@@ -170,8 +182,6 @@ document.getElementById("solveBtn").addEventListener("click", function () {
         board[row][col] = value;
     });
 
-    console.log("Sending board:", board); // 🔥 debug
-
     fetch("https://sudoku-backend-production-4886.up.railway.app/solve", {
         method: "POST",
         headers: {
@@ -180,7 +190,6 @@ document.getElementById("solveBtn").addEventListener("click", function () {
         body: JSON.stringify({ board: board })
     })
     .then(response => {
-        console.log("Status:", response.status);
 
         if (!response.ok) {
             throw new Error("Backend error: " + response.status);
@@ -189,8 +198,6 @@ document.getElementById("solveBtn").addEventListener("click", function () {
         return response.json();
     })
     .then(result => {
-
-        console.log("Result:", result); // 🔥 debug
 
         let solvedGrid = document.getElementById("solvedGrid");
         let solvedSection = document.getElementById("solvedSection");
@@ -213,6 +220,11 @@ document.getElementById("solveBtn").addEventListener("click", function () {
     .catch(error => {
         console.error("ERROR:", error);
         alert("❌ Backend connect nahi ho raha ya error aa raha hai");
+    })
+    .finally(() => {
+        // 🔥 NEW: button wapas normal
+        solveBtn.innerText = "Solve";
+        solveBtn.disabled = false;
     });
 });
 

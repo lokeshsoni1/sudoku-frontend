@@ -134,17 +134,14 @@ let grid = document.getElementById("grid");
 for (let i = 0; i < 81; i++) {
 
     let input = document.createElement("input");
-
     input.maxLength = 1;
 
-    // 🔥 row col calculate
     let row = Math.floor(i / 9);
     let col = i % 9;
 
     input.setAttribute("data-row", row);
     input.setAttribute("data-col", col);
 
-    // 🔥 sirf 1-9 allow
     input.addEventListener("input", function () {
         if (!/^[1-9]$/.test(input.value)) {
             input.value = "";
@@ -161,56 +158,65 @@ document.getElementById("solveBtn").addEventListener("click", function () {
 
     let board = [];
 
-    // 🔥 2D array banana
     for (let i = 0; i < 9; i++) {
         board[i] = [];
     }
 
-    // 🔥 UI → board convert
     inputs.forEach(input => {
         let row = input.getAttribute("data-row");
         let col = input.getAttribute("data-col");
 
         let value = input.value === "" ? 0 : parseInt(input.value);
-
         board[row][col] = value;
     });
 
-    // 🔥 BACKEND CALL
+    console.log("Sending board:", board); // 🔥 debug
+
     fetch("https://sudoku-backend-production-4886.up.railway.app/solve", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json" // 🔥 batata hai JSON bhej rahe
+            "Content-Type": "application/json"
         },
-        body: JSON.stringify({ board: board }) // 🔥 object → JSON string
+        body: JSON.stringify({ board: board })
     })
-    .then(response => response.json()) // 🔥 JSON → JS object
+    .then(response => {
+        console.log("Status:", response.status);
+
+        if (!response.ok) {
+            throw new Error("Backend error: " + response.status);
+        }
+
+        return response.json();
+    })
     .then(result => {
+
+        console.log("Result:", result); // 🔥 debug
 
         let solvedGrid = document.getElementById("solvedGrid");
         let solvedSection = document.getElementById("solvedSection");
 
         solvedGrid.innerHTML = "";
-
-        // 🔥 solved section show
         solvedSection.style.display = "block";
 
-        // 🔥 RESULT UI me fill
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 9; j++) {
 
                 let input = document.createElement("input");
 
-                input.value = result[i][j]; // 🔥 backend se value
+                input.value = result[i][j];
                 input.disabled = true;
 
                 solvedGrid.appendChild(input);
             }
         }
+    })
+    .catch(error => {
+        console.error("ERROR:", error);
+        alert("❌ Backend connect nahi ho raha ya error aa raha hai");
     });
 });
 
-/* 🔥 RESET BUTTON */
+/* 🔥 RESET */
 document.getElementById("resetBtn").addEventListener("click", function () {
 
     let inputs = document.querySelectorAll("#grid input");

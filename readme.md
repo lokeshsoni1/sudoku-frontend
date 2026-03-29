@@ -86,9 +86,8 @@ Response:
 ##  Author
 
 Lokesh Soni
-Phone:  8595598458
-Mail:  [mrlokeshsoni001@gmail.com](mailto:mrlokeshsoni001@gmail.com)
-
+* Phone:  8595598458
+* Mail:  [mrlokeshsoni001@gmail.com](mailto:mrlokeshsoni001@gmail.com)
 ---
 
 ##  Future Improvements
